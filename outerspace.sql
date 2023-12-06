@@ -1,22 +1,22 @@
---code, name, temp--
+-- code, name, temp--
 CREATE TABLE stars(
     code TEXT PRIMARY KEY,
-    name VARCHAR(20) NOT NULL,
-    temp_in_kelvin INT NOT NULL
+    name VARCHAR(20) NOT NULL UNIQUE,
+    temp_in_kelvin FLOAT NOT NULL
 );
 
 -- code, name, orbital per in years, star id--
 CREATE TABLE planets(
     code TEXT PRIMARY KEY,
-    name VARCHAR(20) NOT NULL,
+    name VARCHAR(20) NOT NULL UNIQUE,
     orbital_pd_yrs FLOAT NOT NULL,
     star_id VARCHAR(20) NOT NULL REFERENCES stars
 );
 
---code, name, planet id
+--code, name, planet id, make name UNIQUE
 CREATE TABLE moons(
     code TEXT PRIMARY KEY,
-    name VARCHAR(20) NOT NULL,
+    name VARCHAR(20) NOT NULL UNIQUE,
     planet_id VARCHAR(20) NOT NULL REFERENCES planets
 );
 
@@ -49,11 +49,11 @@ INSERT INTO moons
 
 -- QUERY
 
-SELECT planets.name, stars.name, COUNT(moons.name)
-    FROM planets
-        JOIN stars
+SELECT planets.name AS planet, stars.name AS star, COUNT(moons.code) AS moon_count
+    FROM planets -- AS p
+        JOIN stars -- AS s
           ON planets.star_id = stars.code
         LEFT JOIN moons
-            ON moons.planet_id = planets.code
+          ON moons.planet_id = planets.code
     GROUP BY planets.name, stars.name
     ORDER BY planets.name;
